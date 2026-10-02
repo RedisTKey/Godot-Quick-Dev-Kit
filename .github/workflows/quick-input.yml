@@ -1,0 +1,35 @@
+name: Quick Input
+
+on:
+  push:
+    paths:
+      - 'addons/quick_input/**'
+      - 'tests/run_quick_input.py'
+      - '.github/workflows/quick-input.yml'
+  pull_request:
+    paths:
+      - 'addons/quick_input/**'
+      - 'tests/run_quick_input.py'
+      - '.github/workflows/quick-input.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Download verified official Godot 4.6.3 .NET
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_mono_linux_x86_64.zip
+          echo '702a8a6785060203fd46373adf864586ecf0c377ac685d7107dde66b1eba0a9e  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+      - name: Compile and verify both implementations
+        run: python3 tests/run_quick_input.py --backend all --godot /tmp/godot/Godot_v4.6.3-stable_mono_linux_x86_64/Godot_v4.6.3-stable_mono_linux.x86_64

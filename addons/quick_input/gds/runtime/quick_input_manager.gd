@@ -157,8 +157,12 @@ func apply_rebind(
 		return ERR_ALREADY_IN_USE
 	if policy == ConflictPolicy.SWAP and result.conflicts.size() > 1:
 		return ERR_INVALID_DATA
-	var candidate := _copy_map(_current)
 	var displaced := (_current[requested.action] as Array)[requested.slot] as InputEvent
+	if policy == ConflictPolicy.SWAP and not result.conflicts.is_empty() and displaced != null:
+		var target_action: StringName = result.conflicts[0].action
+		if not _is_allowed(displaced, _definitions[target_action], settings) or _is_reserved(displaced, settings):
+			return ERR_INVALID_PARAMETER
+	var candidate := _copy_map(_current)
 	(candidate[requested.action] as Array)[requested.slot] = _normalize_event(requested.event)
 	if policy == ConflictPolicy.REPLACE:
 		for conflict: QuickInputBinding in result.conflicts:

@@ -1,0 +1,8 @@
+# Godot import/build cache
+.godot/
+# .NET build output
+bin/
+obj/
+
+# Python test helper cache
+__pycache__/

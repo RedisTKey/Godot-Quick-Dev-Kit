@@ -5,7 +5,12 @@ extends RefCounted
 func encode(event: InputEvent) -> Dictionary:
 	if event is InputEventKey:
 		var key := event as InputEventKey
-		if key.physical_keycode == KEY_NONE and key.keycode == KEY_NONE:
+		if (
+			(key.physical_keycode == KEY_NONE and key.keycode == KEY_NONE)
+			or not _valid_keycode(int(key.physical_keycode))
+			or not _valid_keycode(int(key.keycode))
+			or int(key.location) < 0 or int(key.location) > 2
+		):
 			return {}
 		return {
 			"type": "key", "physical": int(key.physical_keycode),

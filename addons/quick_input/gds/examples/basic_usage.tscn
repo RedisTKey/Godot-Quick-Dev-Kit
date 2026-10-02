@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/quick_input/examples/basic_usage.gd" id="1"]
+[ext_resource type="Script" path="res://addons/quick_input/gds/examples/basic_usage.gd" id="1"]
 
 [node name="BasicUsage" type="VBoxContainer"]
 script = ExtResource("1")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/quick_input/csharp/tests/QuickInputRuntimeTests.cs" id="1_tests"]
+
+[node name="QuickInputRuntimeTests" type="Node"]
+script = ExtResource("1_tests")

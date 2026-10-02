@@ -2,7 +2,7 @@
 
 一个面向 **Godot 4.x** 的快速开发工具箱，收录可独立复制、按需启用的通用插件，帮助你更快搭建 Game Jam 原型、独立游戏和小型项目。
 
-当前工具箱包含音频管理、关卡流程管理和本地数据管理模块。每个模块都位于 `addons/` 下，可以单独安装和使用，不需要引入整个工具箱。
+当前工具箱包含音频管理、关卡流程管理、本地数据管理和输入绑定模块。每个模块都位于 `addons/` 下，可以单独安装和使用，不需要引入整个工具箱。
 
 > 项目仍在持续开发中，API 和目录结构可能会发生变化。
 
@@ -10,6 +10,7 @@
 
 | 模块 | 路径 | 说明 |
 | --- | --- | --- |
+| **Quick Input** | [`addons/quick_input`](addons/quick_input) | GDScript / C# 双实现，输入绑定、多槽位、冲突处理、捕获 UI 与存档。 |
 | **Quick Audio Manager** | [`addons/quick_audio_manager`](addons/quick_audio_manager) | 基于 `Resource` 的音频资产、轨道、音量、静音和播放管理。 |
 | **Quick Database** | [`addons/quick_database`](addons/quick_database) | 面向本地存档的数据文档、存储后端、仓储和多存档槽服务。 |
 | **Quick Level Kit** | [`addons/quick_level_kit`](addons/quick_level_kit) | 数据驱动的关卡目录、关卡流程、准备/运行/通关/失败状态和进度管理。 |
@@ -37,7 +38,10 @@
 └── addons/
     ├── quick_audio_manager/
     ├── quick_database/
-    └── quick_level_kit/
+    ├── quick_level_kit/
+    └── quick_input/
+        ├── gds/
+        └── csharp/
 ```
 
 然后打开 Godot 编辑器，在 **Project → Project Settings → Plugins** 中按需启用插件。
@@ -53,6 +57,14 @@
 启用插件后，它会根据自身配置注册对应的 Autoload；禁用插件时会尝试自动移除由插件注册的 Autoload。
 
 ## 快速开始
+
+### Quick Input
+
+提供功能对应的 GDScript 与 C# 输入绑定实现，二选一启用，共用 `QuickInput` Autoload 和兼容的 v1 绑定存档。原 GDScript 代码已移入 `addons/quick_input/gds/`，C# 位于 `addons/quick_input/csharp/`。
+
+支持键盘、鼠标/滚轮、手柄按钮，多槽位绑定，冲突预览与 Allow / Reject / Replace / Swap 策略，安全保存与恢复默认，以及可复用的捕获按钮。C# 需要 Godot .NET 版。
+
+安装、旧版迁移和测试：[`addons/quick_input/README.md`](addons/quick_input/README.md)
 
 ### Quick Audio Manager
 
@@ -143,13 +155,14 @@ QuickLevelKit.load_first_level()
 | Quick Audio Manager | `QuickAudioManager` |
 | Quick Database | `QuickDatabase` |
 | Quick Level Kit | `QuickLevelKit` |
+| Quick Input（GDScript 或 C#） | `QuickInput` |
 
 如果项目中已经存在同名 Autoload，请在启用插件前检查配置，避免名称冲突。
 
 ## 兼容性
 
 - 目标版本：**Godot 4.x**
-- 主要代码语言：**GDScript**
+- 主要代码语言：**GDScript**；Quick Input 同时提供 **C#** 实现（需要 Godot .NET）
 - 不依赖第三方库。
 - 各插件会尽量使用 Godot 4.x 的通用 API；具体验证版本和限制请以对应插件的 README 为准。
 
@@ -162,7 +175,11 @@ Godot-Quick-Dev-Kit/
 │   │   └── README.md
 │   ├── quick_database/
 │   │   └── README.md
-│   └── quick_level_kit/
+│   ├── quick_level_kit/
+│   │   └── README.md
+│   └── quick_input/
+│       ├── gds/
+│       ├── csharp/
 │       └── README.md
 └── README.md
 ```
@@ -172,7 +189,7 @@ Godot-Quick-Dev-Kit/
 这个项目提供的是通用开发基础设施，不会替项目决定具体的玩法和表现：
 
 - 不包含完整游戏模板或示例游戏。
-- 不负责具体的 HUD、输入系统、视觉转场和玩法规则。
+- 不负责具体的 HUD、输入路由、视觉转场和玩法规则；Quick Input 仅管理显式配置的动作绑定。
 - 不强制项目使用特定的 UI、场景组织方式或存档字段。
 - 插件的持久化、关卡逻辑和表现层扩展由使用者的项目负责。
 

@@ -3,7 +3,6 @@ extends SceneTree
 const ACTION_A := &"quick_input_test_a"
 const ACTION_B := &"quick_input_test_b"
 const ACTION_C := &"quick_input_test_c"
-const SAVE_PATH := "user://quick_input_test_bindings.cfg"
 
 
 class MemoryStore:
@@ -11,12 +10,14 @@ class MemoryStore:
 
 	var bindings: Dictionary = {}
 	var failure: Error = OK
+	var save_calls := 0
 
 	func load_bindings() -> Dictionary:
 		load_error = OK
 		return bindings.duplicate(true)
 
 	func save_bindings(data: Dictionary) -> Error:
+		save_calls += 1
 		if failure != OK:
 			return failure
 		bindings = data.duplicate(true)
@@ -24,6 +25,7 @@ class MemoryStore:
 
 
 var _failures := 0
+var _save_path := "user://quick_input_gds_test_%d_%d.cfg" % [OS.get_process_id(), Time.get_ticks_usec()]
 
 
 func _init() -> void:
@@ -31,13 +33,16 @@ func _init() -> void:
 
 
 func _run() -> void:
-	if not load("res://addons/quick_input/runtime/quick_input_manager.gd") is Script:
+	if not load("res://addons/quick_input/gds/runtime/quick_input_manager.gd") is Script:
 		push_error("Quick Input runtime script did not load")
 		quit(1)
 		return
-	_setup_actions()
+	if not _setup_actions():
+		quit(_failures)
+		return
 	_test_codec()
 	_test_rebinding_and_conflicts()
+	_test_swap_destination_validation()
 	_test_persistence()
 	_cleanup_actions()
 	if _failures == 0:
@@ -45,19 +50,29 @@ func _run() -> void:
 	quit(_failures)
 
 
-func _setup_actions() -> void:
+func _setup_actions() -> bool:
+	# Never overwrite game actions or a file left by another test process.
+	for action: StringName in [ACTION_A, ACTION_B, ACTION_C]:
+		if InputMap.has_action(action):
+			_assert(false, "Test action already exists; run tests in an isolated project: %s" % action)
+			return false
+	for suffix: String in ["", ".previous", ".tmp"]:
+		if FileAccess.file_exists("%s%s" % [_save_path, suffix]):
+			_assert(false, "Refusing to overwrite an existing test save")
+			return false
 	for item: Array in [[ACTION_A, KEY_A], [ACTION_B, KEY_B], [ACTION_C, KEY_C]]:
 		InputMap.add_action(item[0])
 		InputMap.action_add_event(item[0], _key(item[1]))
+	return true
 
 
 func _cleanup_actions() -> void:
 	for action: StringName in [ACTION_A, ACTION_B, ACTION_C]:
 		InputMap.erase_action(action)
 	for suffix: String in ["", ".previous", ".tmp"]:
-		var path := ProjectSettings.globalize_path("%s%s" % [SAVE_PATH, suffix])
+		var path := ProjectSettings.globalize_path("%s%s" % [_save_path, suffix])
 		if FileAccess.file_exists(path):
-			DirAccess.remove_absolute(path)
+			_assert(DirAccess.remove_absolute(path) == OK, "Test save could not be cleaned up")
 
 
 func _settings() -> QuickInputSettings:
@@ -94,6 +109,8 @@ func _test_codec() -> void:
 			"Supported event must round-trip")
 	_assert(codec.decode({"type": "key", "physical": "bad"}) == null,
 		"Corrupt event must be rejected")
+	_assert(codec.encode(_key(KEY_UNKNOWN)).is_empty(),
+		"Unknown physical key must not serialize as a supported binding")
 
 
 func _test_rebinding_and_conflicts() -> void:
@@ -101,6 +118,13 @@ func _test_rebinding_and_conflicts() -> void:
 	var manager := QuickInputManager.new()
 	_assert(manager.configure(_settings(), store) == OK, "Configure failed")
 	_assert(manager.get_binding_text(ACTION_A, 1) == "Unbound", "Second slot should start empty")
+	_assert(manager.preview_rebind(ACTION_A, 0, _key(KEY_UNKNOWN)).status == QuickInputRebindResult.Status.INVALID,
+		"Unknown physical key preview must be invalid")
+	_assert(manager.rebind(ACTION_A, 0, _key(KEY_UNKNOWN)) == ERR_INVALID_PARAMETER,
+		"Unknown physical key must not clear an existing binding")
+	_assert((manager.get_binding(ACTION_A, 0) as InputEventKey).physical_keycode == KEY_A
+		and InputMap.action_get_events(ACTION_A)[0].physical_keycode == KEY_A and store.save_calls == 0,
+		"Unknown physical key rejection must preserve the mapping and avoid storage")
 	var preview := manager.preview_rebind(ACTION_A, 0, _key(KEY_B))
 	_assert(preview.status == QuickInputRebindResult.Status.CONFLICT and preview.conflicts.size() == 1,
 		"Same-group binding must show conflict")
@@ -191,8 +215,75 @@ func _test_rebinding_and_conflicts() -> void:
 	manager.free()
 
 
+func _test_swap_destination_validation() -> void:
+	var suffix := "%d_%d" % [OS.get_process_id(), Time.get_ticks_usec()]
+	var source_action := StringName("quick_input_swap_source_%s" % suffix)
+	var target_action := StringName("quick_input_swap_target_%s" % suffix)
+	if InputMap.has_action(source_action) or InputMap.has_action(target_action):
+		_assert(false, "Swap regression actions already exist; refusing to overwrite them")
+		return
+	var mouse := InputEventMouseButton.new()
+	mouse.button_index = MOUSE_BUTTON_LEFT
+	InputMap.add_action(source_action)
+	InputMap.action_add_event(source_action, mouse)
+	InputMap.add_action(target_action)
+	InputMap.action_add_event(target_action, _key(KEY_SPACE))
+	var source_definition := QuickInputActionDefinition.new()
+	source_definition.action = source_action
+	source_definition.allowed_event_types = QuickInputActionDefinition.KEYBOARD | QuickInputActionDefinition.MOUSE
+	var target_definition := QuickInputActionDefinition.new()
+	target_definition.action = target_action
+	target_definition.allowed_event_types = QuickInputActionDefinition.KEYBOARD
+	var settings := QuickInputSettings.new()
+	settings.actions.append(source_definition)
+	settings.actions.append(target_definition)
+	var store := MemoryStore.new()
+	var manager := QuickInputManager.new()
+	var configured := manager.configure(settings, store)
+	_assert(configured == OK, "Swap regression fixture must configure")
+	if configured == OK:
+		var codec := QuickInputEventCodec.new()
+		var original_source := codec.signature(InputMap.action_get_events(source_action)[0])
+		var original_target := codec.signature(InputMap.action_get_events(target_action)[0])
+		var changed: Array = []
+		manager.binding_changed.connect(func(action: StringName, slot: int) -> void: changed.append([action, slot]))
+		_assert(manager.rebind(source_action, 0, _key(KEY_SPACE), QuickInputManager.ConflictPolicy.SWAP) == ERR_INVALID_PARAMETER,
+			"Swap must reject a mouse displaced into a keyboard-only action")
+		_assert(store.save_calls == 0 and changed.is_empty(),
+			"Rejected swap must not save or emit binding changes")
+		_assert(codec.signature(manager.get_binding(source_action, 0)) == original_source
+			and codec.signature(manager.get_binding(target_action, 0)) == original_target,
+			"Rejected swap must preserve both in-memory bindings")
+		_assert(codec.signature(InputMap.action_get_events(source_action)[0]) == original_source
+			and codec.signature(InputMap.action_get_events(target_action)[0]) == original_target,
+			"Rejected swap must preserve both InputMap actions")
+		# The definitions and settings are live resources. Permit mouse events on the
+		# destination, then reserve the displaced default to isolate the other guard.
+		target_definition.allowed_event_types |= QuickInputActionDefinition.MOUSE
+		settings.reserved_events.append(mouse)
+		_assert(manager.rebind(source_action, 0, _key(KEY_SPACE), QuickInputManager.ConflictPolicy.SWAP) == ERR_INVALID_PARAMETER,
+			"Swap must reject a reserved displaced event")
+		_assert(store.save_calls == 0 and changed.is_empty(),
+			"Reserved-event rejection must not save or emit binding changes")
+		_assert(codec.signature(manager.get_binding(source_action, 0)) == original_source
+			and codec.signature(manager.get_binding(target_action, 0)) == original_target
+			and codec.signature(InputMap.action_get_events(source_action)[0]) == original_source
+			and codec.signature(InputMap.action_get_events(target_action)[0]) == original_target,
+			"Reserved-event rejection must preserve all bindings")
+		_assert(manager.clear_binding(source_action, 0) == OK,
+			"Source slot must be clearable before testing an empty-slot swap")
+		_assert(manager.rebind(source_action, 0, _key(KEY_SPACE), QuickInputManager.ConflictPolicy.SWAP) == OK,
+			"Swap with no displaced event must remain valid")
+		_assert(manager.get_binding(target_action, 0) == null,
+			"Empty-slot swap must clear the occupied destination")
+	manager.restore_defaults_in_input_map()
+	manager.free()
+	InputMap.erase_action(source_action)
+	InputMap.erase_action(target_action)
+
+
 func _test_persistence() -> void:
-	var store := QuickInputConfigFileStore.new(SAVE_PATH)
+	var store := QuickInputConfigFileStore.new(_save_path)
 	var manager := QuickInputManager.new()
 	_assert(manager.configure(_settings(), store) == OK, "File store must start empty")
 	var mouse := InputEventMouseButton.new()
@@ -201,17 +292,17 @@ func _test_persistence() -> void:
 	manager.restore_defaults_in_input_map()
 	manager.free()
 	var restored := QuickInputManager.new()
-	_assert(restored.configure(_settings(), QuickInputConfigFileStore.new(SAVE_PATH)) == OK,
+	_assert(restored.configure(_settings(), QuickInputConfigFileStore.new(_save_path)) == OK,
 		"File store must reload binding")
 	_assert(restored.get_binding(ACTION_A, 1) is InputEventMouseButton,
 		"Saved mouse event must be restored")
 	restored.restore_defaults_in_input_map()
 	restored.free()
-	var original := ProjectSettings.globalize_path(SAVE_PATH)
+	var original := ProjectSettings.globalize_path(_save_path)
 	_assert(DirAccess.rename_absolute(original, "%s.previous" % original) == OK,
 		"Interrupted-save fixture must move the save aside")
 	var recovered := QuickInputManager.new()
-	_assert(recovered.configure(_settings(), QuickInputConfigFileStore.new(SAVE_PATH)) == OK,
+	_assert(recovered.configure(_settings(), QuickInputConfigFileStore.new(_save_path)) == OK,
 		"Interrupted save must recover from the previous file")
 	_assert(recovered.get_binding(ACTION_A, 1) is InputEventMouseButton,
 		"Recovered save must retain the binding")
@@ -220,9 +311,9 @@ func _test_persistence() -> void:
 	var corrupt := ConfigFile.new()
 	corrupt.set_value("meta", "version", 1)
 	corrupt.set_value("input", "bindings", {String(ACTION_A): [{"type": "key", "physical": "bad"}, null]})
-	_assert(corrupt.save(SAVE_PATH) == OK, "Corrupt fixture must be writable")
+	_assert(corrupt.save(_save_path) == OK, "Corrupt fixture must be writable")
 	var rejected := QuickInputManager.new()
-	_assert(rejected.configure(_settings(), QuickInputConfigFileStore.new(SAVE_PATH)) == ERR_INVALID_DATA,
+	_assert(rejected.configure(_settings(), QuickInputConfigFileStore.new(_save_path)) == ERR_INVALID_DATA,
 		"Invalid saved events must fail without applying bindings")
 	_assert(not rejected.is_configured() and InputMap.action_get_events(ACTION_A).size() == 1,
 		"Invalid saved events must leave InputMap untouched")

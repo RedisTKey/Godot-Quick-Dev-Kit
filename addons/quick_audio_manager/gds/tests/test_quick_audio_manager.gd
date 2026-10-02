@@ -1,13 +1,13 @@
 extends SceneTree
 
 const DEFAULT_LIBRARY_PATH := (
-	"res://addons/quick_audio_manager/resources/default_track_library.tres"
+	"res://addons/quick_audio_manager/gds/resources/default_track_library.tres"
 )
 const MUSIC_TRACK_PATH := (
-	"res://addons/quick_audio_manager/resources/tracks/music.tres"
+	"res://addons/quick_audio_manager/gds/resources/tracks/music.tres"
 )
 const SFX_TRACK_PATH := (
-	"res://addons/quick_audio_manager/resources/tracks/sfx.tres"
+	"res://addons/quick_audio_manager/gds/resources/tracks/sfx.tres"
 )
 
 var _failures := 0

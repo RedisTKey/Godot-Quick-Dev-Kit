@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CSharpQuickAudioTrackLibrary" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://addons/quick_audio_manager/csharp/editor/CSharpQuickAudioTrackLibrary.cs" id="1_library"]
+[ext_resource type="Script" path="res://addons/quick_audio_manager/csharp/runtime/QuickAudioTrackDefinition.cs" id="2_track"]
+[ext_resource type="Resource" path="res://addons/quick_audio_manager/csharp/resources/tracks/music.tres" id="3_music"]
+[ext_resource type="Resource" path="res://addons/quick_audio_manager/csharp/resources/tracks/sfx.tres" id="4_sfx"]
+[ext_resource type="Resource" path="res://addons/quick_audio_manager/csharp/resources/tracks/ui.tres" id="5_ui"]
+
+[resource]
+script = ExtResource("1_library")
+Tracks = Array[ExtResource("2_track")]([ExtResource("3_music"), ExtResource("4_sfx"), ExtResource("5_ui")])

@@ -32,7 +32,7 @@ const ERROR_TRACK_UNKNOWN := &"track_unknown"
 const ERROR_TRACK_BUS_MISSING := &"track_bus_missing"
 
 const DEFAULT_TRACK_LIBRARY: QuickAudioTrackLibrary = preload(
-	"res://addons/quick_audio_manager/resources/default_track_library.tres"
+	"res://addons/quick_audio_manager/gds/resources/default_track_library.tres"
 )
 
 @export var track_library: QuickAudioTrackLibrary = DEFAULT_TRACK_LIBRARY

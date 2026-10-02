@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="QuickAudioTrackDefinition" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/quick_audio_manager/runtime/quick_audio_track_definition.gd" id="1_track"]
+[ext_resource type="Script" path="res://addons/quick_audio_manager/gds/runtime/quick_audio_track_definition.gd" id="1_track"]
 
 [resource]
 script = ExtResource("1_track")

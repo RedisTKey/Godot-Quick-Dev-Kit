@@ -10,7 +10,7 @@
 
 | 模块 | 路径 | 说明 |
 | --- | --- | --- |
-| **Quick Audio Manager** | [`addons/quick_audio_manager`](addons/quick_audio_manager) | 基于 `Resource` 的音频资产、轨道、音量、静音和播放管理。 |
+| **Quick Audio Manager** | [`addons/quick_audio_manager`](addons/quick_audio_manager) | GDScript / C# 双实现的音频资产、轨道、音量、静音和播放管理。 |
 | **Quick Database** | [`addons/quick_database`](addons/quick_database) | 面向本地存档的数据文档、存储后端、仓储和多存档槽服务。 |
 | **Quick Level Kit** | [`addons/quick_level_kit`](addons/quick_level_kit) | 数据驱动的关卡目录、关卡流程、准备/运行/通关/失败状态和进度管理。 |
 
@@ -55,6 +55,8 @@
 ## 快速开始
 
 ### Quick Audio Manager
+
+选择 `addons/quick_audio_manager/gds/` 或 `csharp/`，只启用对应的一个插件；C# 需要 Godot .NET。
 
 用于统一管理音乐、音效和 UI 音频轨道。
 
@@ -149,7 +151,7 @@ QuickLevelKit.load_first_level()
 ## 兼容性
 
 - 目标版本：**Godot 4.x**
-- 主要代码语言：**GDScript**
+- 主要代码语言：**GDScript**；Quick Audio Manager 同时提供 **C#** 实现（需要 Godot .NET）
 - 不依赖第三方库。
 - 各插件会尽量使用 Godot 4.x 的通用 API；具体验证版本和限制请以对应插件的 README 为准。
 
@@ -159,6 +161,8 @@ QuickLevelKit.load_first_level()
 Godot-Quick-Dev-Kit/
 ├── addons/
 │   ├── quick_audio_manager/
+│   │   ├── gds/
+│   │   ├── csharp/
 │   │   └── README.md
 │   ├── quick_database/
 │   │   └── README.md

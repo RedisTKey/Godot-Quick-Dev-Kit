@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CSharpQuickAudioTrackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/quick_audio_manager/csharp/editor/CSharpQuickAudioTrackDefinition.cs" id="1_track"]
+
+[resource]
+script = ExtResource("1_track")
+TrackId = &"ui"
+DisplayName = "UI"
+BusName = &"QuickUI"
+MaxVoices = 8
+ProcessMode = 0

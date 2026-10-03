@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="VfxDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/quick_vfx_manager/csharp/runtime/VfxDefinition.cs" id="1_definition"]
+[ext_resource type="PackedScene" path="res://addons/quick_vfx_manager/csharp/examples/effects/CompositeBurst.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_definition")
+Id = &"composite_burst"
+Scene = ExtResource("2_scene")
+Placement = 0
+ProcessWhilePaused = false
+Mode = 0
+OneShotTimeout = 5.0
+StopTimeout = 3.0

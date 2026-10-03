@@ -1,0 +1,6 @@
+.godot/
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user

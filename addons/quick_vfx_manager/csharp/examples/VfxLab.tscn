@@ -1,0 +1,523 @@
+[gd_scene format=3 uid="uid://bj30voe6jbvbp"]
+
+[ext_resource type="Script" uid="uid://daesuwxshpt4h" path="res://addons/quick_vfx_manager/csharp/examples/VfxLab.cs" id="1_lab"]
+[ext_resource type="Script" uid="uid://cw8cd807se16q" path="res://addons/quick_vfx_manager/csharp/runtime/VfxPlayback.cs" id="2_playback"]
+[ext_resource type="Script" uid="uid://bnj2hia4wjl34" path="res://addons/quick_vfx_manager/csharp/runtime/VfxDefinition.cs" id="3_definition"]
+[ext_resource type="Resource" uid="uid://df02t1klomrcs" path="res://addons/quick_vfx_manager/csharp/examples/definitions/WorldPulse.tres" id="4_world"]
+[ext_resource type="Resource" path="res://addons/quick_vfx_manager/csharp/examples/definitions/CompositeBurst.tres" id="5_burst"]
+[ext_resource type="Resource" path="res://addons/quick_vfx_manager/csharp/examples/definitions/AttachedLoop.tres" id="6_loop"]
+
+[sub_resource type="Environment" id="Environment_lab"]
+background_mode = 1
+background_color = Color(0.025, 0.033, 0.055, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.62, 0.72, 0.94, 1)
+ambient_light_energy = 0.65
+reflected_light_source = 2
+
+[sub_resource type="StandardMaterial3D" id="Material_floor"]
+albedo_color = Color(0.035, 0.046, 0.071, 1)
+roughness = 0.8
+
+[sub_resource type="PlaneMesh" id="Mesh_floor"]
+material = SubResource("Material_floor")
+size = Vector2(40, 30)
+
+[sub_resource type="StandardMaterial3D" id="Material_stage"]
+albedo_color = Color(0.073, 0.094, 0.135, 1)
+metallic = 0.15
+roughness = 0.48
+
+[sub_resource type="CylinderMesh" id="Mesh_stage"]
+material = SubResource("Material_stage")
+top_radius = 1.7
+bottom_radius = 1.7
+height = 0.14
+
+[sub_resource type="StandardMaterial3D" id="Material_World"]
+shading_mode = 0
+albedo_color = Color(0.25, 0.83, 0.96, 1)
+
+[sub_resource type="TorusMesh" id="Mesh_outline"]
+inner_radius = 1.67
+outer_radius = 1.695
+ring_segments = 6
+
+[sub_resource type="StandardMaterial3D" id="Material_Composite"]
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0.27, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_Attached"]
+shading_mode = 0
+albedo_color = Color(0.73, 0.5, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_source"]
+shading_mode = 0
+albedo_color = Color(0.88, 0.94, 1, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_source"]
+radius = 0.12
+height = 0.24
+radial_segments = 16
+rings = 8
+
+[sub_resource type="BoxMesh" id="Mesh_anchor"]
+size = Vector3(0.22, 0.22, 0.22)
+
+[sub_resource type="StyleBoxFlat" id="Button_hover"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.19, 0.24, 0.33, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="Button_normal"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.115, 0.15, 0.205, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="Button_pressed"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.25, 0.35, 0.46, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="Theme" id="Theme_lab"]
+default_font_size = 14
+Button/colors/font_color = Color(0.9, 0.95, 1, 1)
+Button/styles/focus = SubResource("Button_hover")
+Button/styles/hover = SubResource("Button_hover")
+Button/styles/normal = SubResource("Button_normal")
+Button/styles/pressed = SubResource("Button_pressed")
+Label/colors/font_color = Color(0.87, 0.91, 0.98, 1)
+
+[sub_resource type="StyleBoxFlat" id="Panel_World"]
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.047, 0.061, 0.089, 1)
+border_width_left = 1
+border_width_top = 2
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.83, 0.96, 0.55)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Panel_Composite"]
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.047, 0.061, 0.089, 1)
+border_width_left = 1
+border_width_top = 2
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.65, 0.27, 0.55)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Panel_Attached"]
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.047, 0.061, 0.089, 1)
+border_width_left = 1
+border_width_top = 2
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.73, 0.5, 1, 0.55)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="VfxLab" type="Node3D" unique_id=1400276512]
+script = ExtResource("1_lab")
+
+[node name="VfxPlayback" type="Node" parent="." unique_id=590898076 node_paths=PackedStringArray("DefaultAnchor")]
+script = ExtResource("2_playback")
+Definitions = Array[ExtResource("3_definition")]([ExtResource("4_world"), ExtResource("5_burst"), ExtResource("6_loop")])
+DefaultAnchor = NodePath("../Attachment")
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=844601177]
+environment = SubResource("Environment_lab")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1314883460]
+transform = Transform3D(1, 0, 0, 0, 0.8192319, 0.57346237, 0, -0.57346237, 0.8192319, 0, 8.4, 12)
+projection = 1
+current = true
+size = 14.2
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=375489116]
+transform = Transform3D(0.6981691, 0.66336215, -0.26927784, -0.1961747, 0.53898555, 0.81915206, 0.6885313, -0.5190812, 0.50643796, 0, 0, 0)
+light_color = Color(0.72, 0.83, 1, 1)
+light_energy = 1.1
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=983836485]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("Mesh_floor")
+
+[node name="WorldStage" type="Node3D" parent="." unique_id=1554869783]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0, 0)
+
+[node name="Base" type="MeshInstance3D" parent="WorldStage" unique_id=1660436224]
+mesh = SubResource("Mesh_stage")
+
+[node name="Outline" type="MeshInstance3D" parent="WorldStage" unique_id=309085594]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0)
+material_override = SubResource("Material_World")
+mesh = SubResource("Mesh_outline")
+
+[node name="CompositeStage" type="Node3D" parent="." unique_id=617211454]
+
+[node name="Base" type="MeshInstance3D" parent="CompositeStage" unique_id=330766841]
+mesh = SubResource("Mesh_stage")
+
+[node name="Outline" type="MeshInstance3D" parent="CompositeStage" unique_id=1925970810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0)
+material_override = SubResource("Material_Composite")
+mesh = SubResource("Mesh_outline")
+
+[node name="AttachedStage" type="Node3D" parent="." unique_id=932003065]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0, 0)
+
+[node name="Base" type="MeshInstance3D" parent="AttachedStage" unique_id=1993120151]
+mesh = SubResource("Mesh_stage")
+
+[node name="Outline" type="MeshInstance3D" parent="AttachedStage" unique_id=1976705157]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0)
+material_override = SubResource("Material_Attached")
+mesh = SubResource("Mesh_outline")
+
+[node name="WorldSource" type="Node3D" parent="." unique_id=1558592357]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0.42, 0)
+
+[node name="MovingSource" type="MeshInstance3D" parent="WorldSource" unique_id=1330894988]
+material_override = SubResource("Material_source")
+mesh = SubResource("Mesh_source")
+
+[node name="Attachment" type="Node3D" parent="." unique_id=475162002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0.62, 0)
+
+[node name="MovingAnchor" type="MeshInstance3D" parent="Attachment" unique_id=675707034]
+material_override = SubResource("Material_source")
+mesh = SubResource("Mesh_anchor")
+
+[node name="Interface" type="CanvasLayer" parent="." unique_id=76884323]
+
+[node name="Kicker" type="Label" parent="Interface" unique_id=42692157]
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 550.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.4, 0.72, 0.89, 1)
+theme_override_font_sizes/font_size = 12
+text = "QUICK DEV KIT  /  STANDALONE C# EXAMPLE"
+
+[node name="Title" type="Label" parent="Interface" unique_id=1092151123]
+offset_left = 30.0
+offset_top = 47.0
+offset_right = 800.0
+offset_bottom = 94.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 34
+text = "VFX Playback Lab"
+
+[node name="Subtitle" type="Label" parent="Interface" unique_id=136912528]
+offset_left = 32.0
+offset_top = 98.0
+offset_right = 940.0
+offset_bottom = 126.0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 15
+text = "Authored scenes. Independent handles. Every visual tail accounted for."
+
+[node name="AutoDemo" type="CheckButton" parent="Interface" unique_id=904897808]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -218.0
+offset_top = 50.0
+offset_right = -32.0
+offset_bottom = 91.0
+grow_horizontal = 0
+theme = SubResource("Theme_lab")
+button_pressed = true
+text = "Auto demo"
+
+[node name="Hint" type="Label" parent="Interface" unique_id=513191471]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -370.0
+offset_top = 100.0
+offset_right = -32.0
+offset_bottom = 125.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 12
+text = "Use a button to take manual control"
+horizontal_alignment = 2
+
+[node name="StageWorld" type="Label" parent="Interface" unique_id=1630006349]
+anchors_preset = -1
+anchor_right = 0.33333
+offset_left = 14.0
+offset_top = 159.0
+offset_right = -14.0
+offset_bottom = 183.0
+theme_override_colors/font_color = Color(0.25, 0.83, 0.96, 1)
+theme_override_font_sizes/font_size = 13
+text = "01  /  WORLD SPACE"
+horizontal_alignment = 1
+
+[node name="NoteWorld" type="Label" parent="Interface" unique_id=1889909967]
+anchors_preset = -1
+anchor_right = 0.33333
+offset_left = 14.0
+offset_top = 187.0
+offset_right = -14.0
+offset_bottom = 209.0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 12
+text = "White source moves. The pulse stays."
+horizontal_alignment = 1
+
+[node name="StageComposite" type="Label" parent="Interface" unique_id=929292515]
+anchors_preset = -1
+anchor_left = 0.33333
+anchor_right = 0.66667
+offset_left = 14.0
+offset_top = 159.0
+offset_right = -14.0
+offset_bottom = 183.0
+theme_override_colors/font_color = Color(1, 0.65, 0.27, 1)
+theme_override_font_sizes/font_size = 13
+text = "02  /  COMPOSITE"
+horizontal_alignment = 1
+
+[node name="NoteComposite" type="Label" parent="Interface" unique_id=941302136]
+anchors_preset = -1
+anchor_left = 0.33333
+anchor_right = 0.66667
+offset_left = 14.0
+offset_top = 187.0
+offset_right = -14.0
+offset_bottom = 209.0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 12
+text = "Particles + animation + instance shader"
+horizontal_alignment = 1
+
+[node name="StageAttached" type="Label" parent="Interface" unique_id=573397403]
+anchors_preset = -1
+anchor_left = 0.66667
+anchor_right = 1.0
+offset_left = 14.0
+offset_top = 159.0
+offset_right = -14.0
+offset_bottom = 183.0
+theme_override_colors/font_color = Color(0.73, 0.5, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "03  /  ATTACHED"
+horizontal_alignment = 1
+
+[node name="NoteAttached" type="Label" parent="Interface" unique_id=951175383]
+anchors_preset = -1
+anchor_left = 0.66667
+anchor_right = 1.0
+offset_left = 14.0
+offset_top = 187.0
+offset_right = -14.0
+offset_bottom = 209.0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 12
+text = "The whole effect follows the white anchor."
+horizontal_alignment = 1
+
+[node name="Panel" type="Control" parent="Interface" unique_id=2034243766]
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -278.0
+offset_right = -32.0
+offset_bottom = -52.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = SubResource("Theme_lab")
+
+[node name="Cards" type="HBoxContainer" parent="Interface/Panel" unique_id=782942216]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="World" type="PanelContainer" parent="Interface/Panel/Cards" unique_id=238450991]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Panel_World")
+
+[node name="Content" type="VBoxContainer" parent="Interface/Panel/Cards/World" unique_id=956269361]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Interface/Panel/Cards/World/Content" unique_id=58968752]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.83, 0.96, 1)
+theme_override_font_sizes/font_size = 19
+text = "World pulse"
+
+[node name="Description" type="Label" parent="Interface/Panel/Cards/World/Content" unique_id=1784547322]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.67, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "Spawn at the source’s current transform.
+New requests may overlap safely."
+
+[node name="Status" type="Label" parent="Interface/Panel/Cards/World/Content" unique_id=950544392]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "READY"
+
+[node name="Play" type="Button" parent="Interface/Panel/Cards/World/Content" unique_id=1828168222]
+layout_mode = 2
+text = "Play world pulse"
+
+[node name="Detail" type="Label" parent="Interface/Panel/Cards/World/Content" unique_id=1815700135]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_colors/font_color = Color(0.37, 0.47, 0.6, 1)
+theme_override_font_sizes/font_size = 10
+text = "WORLD · ONE SHOT"
+vertical_alignment = 2
+
+[node name="Composite" type="PanelContainer" parent="Interface/Panel/Cards" unique_id=2071520099]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Panel_Composite")
+
+[node name="Content" type="VBoxContainer" parent="Interface/Panel/Cards/Composite" unique_id=105184240]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Interface/Panel/Cards/Composite/Content" unique_id=1457044513]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.27, 1)
+theme_override_font_sizes/font_size = 19
+text = "Composite burst"
+
+[node name="Description" type="Label" parent="Interface/Panel/Cards/Composite/Content" unique_id=818287348]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.67, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "One scene, three participant types.
+Completion waits for the slowest tail."
+
+[node name="Status" type="Label" parent="Interface/Panel/Cards/Composite/Content" unique_id=483862856]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "READY"
+
+[node name="Play" type="Button" parent="Interface/Panel/Cards/Composite/Content" unique_id=1615671861]
+layout_mode = 2
+text = "Play composite burst"
+
+[node name="Detail" type="Label" parent="Interface/Panel/Cards/Composite/Content" unique_id=948968388]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_colors/font_color = Color(0.37, 0.47, 0.6, 1)
+theme_override_font_sizes/font_size = 10
+text = "GPU PARTICLES · MESH / LIGHT · SHADER"
+vertical_alignment = 2
+
+[node name="Attached" type="PanelContainer" parent="Interface/Panel/Cards" unique_id=308049041]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Panel_Attached")
+
+[node name="Content" type="VBoxContainer" parent="Interface/Panel/Cards/Attached" unique_id=883273320]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Interface/Panel/Cards/Attached/Content" unique_id=1272025668]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73, 0.5, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "Attached loop"
+
+[node name="Description" type="Label" parent="Interface/Panel/Cards/Attached/Content" unique_id=2053849631]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.67, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "A local-space effect on a moving anchor.
+Compare the authored outro with a hard stop."
+
+[node name="Status" type="Label" parent="Interface/Panel/Cards/Attached/Content" unique_id=1962970200]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "READY"
+
+[node name="Play" type="Button" parent="Interface/Panel/Cards/Attached/Content" unique_id=1362878089]
+layout_mode = 2
+text = "Start attached loop"
+
+[node name="Stops" type="HBoxContainer" parent="Interface/Panel/Cards/Attached/Content" unique_id=172567633]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Graceful" type="Button" parent="Interface/Panel/Cards/Attached/Content/Stops" unique_id=1184983336]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Stop gracefully"
+
+[node name="Immediate" type="Button" parent="Interface/Panel/Cards/Attached/Content/Stops" unique_id=1996285626]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Stop immediately"
+
+[node name="Activity" type="Label" parent="Interface" unique_id=1663751413]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 34.0
+offset_top = -40.0
+offset_right = -34.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.54, 0.62, 0.74, 1)
+theme_override_font_sizes/font_size = 12
+text = "Loading authored VFX definitions…"

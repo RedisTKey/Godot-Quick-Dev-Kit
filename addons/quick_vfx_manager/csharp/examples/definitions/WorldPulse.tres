@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="VfxDefinition" format=3 uid="uid://df02t1klomrcs"]
+
+[ext_resource type="Script" uid="uid://bnj2hia4wjl34" path="res://addons/quick_vfx_manager/csharp/runtime/VfxDefinition.cs" id="1_definition"]
+[ext_resource type="PackedScene" path="res://addons/quick_vfx_manager/csharp/examples/effects/WorldPulse.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_definition")
+Id = &"world_pulse"
+Scene = ExtResource("2_scene")
+OneShotTimeout = 5.0
+StopTimeout = 3.0

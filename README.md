@@ -10,6 +10,7 @@
 
 | 模块 | 路径 | 说明 |
 | --- | --- | --- |
+| **Quick VFX Manager (C#)** | [`addons/quick_vfx_manager`](addons/quick_vfx_manager) | 调用者组件注册 Scene/Resource、组合特效生命周期、世界/附着播放；无 Autoload、无池化。 |
 | **Quick Audio Manager** | [`addons/quick_audio_manager`](addons/quick_audio_manager) | 基于 `Resource` 的音频资产、轨道、音量、静音和播放管理。 |
 | **Quick Database** | [`addons/quick_database`](addons/quick_database) | 面向本地存档的数据文档、存储后端、仓储和多存档槽服务。 |
 | **Quick Level Kit** | [`addons/quick_level_kit`](addons/quick_level_kit) | 数据驱动的关卡目录、关卡流程、准备/运行/通关/失败状态和进度管理。 |
@@ -51,6 +52,10 @@
 ```
 
 启用插件后，它会根据自身配置注册对应的 Autoload；禁用插件时会尝试自动移除由插件注册的 Autoload。
+
+## Quick VFX 独立演示工程
+
+本仓库根目录 `project.godot` 是独立 Quick VFX Manager 实验室（Godot 4.7.2 .NET + .NET 9）。打开后先 Build 再运行；只编译 VFX 插件，不启用或依赖其他 Quick 模块。安装到现有项目时只复制所需插件目录，详见 [Quick VFX 文档](addons/quick_vfx_manager/README.md)。
 
 ## 快速开始
 
@@ -149,7 +154,7 @@ QuickLevelKit.load_first_level()
 ## 兼容性
 
 - 目标版本：**Godot 4.x**
-- 主要代码语言：**GDScript**
+- 主要代码语言：**GDScript**；Quick VFX Manager 为独立 **C# / .NET** 插件
 - 不依赖第三方库。
 - 各插件会尽量使用 Godot 4.x 的通用 API；具体验证版本和限制请以对应插件的 README 为准。
 

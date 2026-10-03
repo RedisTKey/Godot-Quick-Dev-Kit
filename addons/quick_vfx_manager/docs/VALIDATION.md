@@ -48,4 +48,6 @@ GODOT=/path/to/Godot_v4.7.2-stable_mono_linux.x86_64 tests/quick_vfx_manager/run
 
 自动测试会故意注册一个抛错的 cancellation callback，出现一次 `EXPECTED test cancellation exception` 警告是预期覆盖；其余检查应正常通过。失败测试返回非零退出码。
 
-GitHub Actions 工作流 `Quick VFX standalone` 在本插件相关文件 push/PR 时执行同样的独立验证。准确远端 commit 和该 commit 的实际 CI 结果应以 GitHub 页面为准；本文件记录的是发布前的云端实测。
+GitHub Actions 工作流 `Quick VFX checks` 在本插件相关文件 push/PR 时只执行 C# Debug/Release 编译，不安装或启动 Godot。完整独立引擎检查只在 `workflow_dispatch` 手动触发时执行，或自行运行上面的脚本。GitHub 网页上的手动运行按钮要求工作流已存在于默认分支；合并前仍可直接运行脚本，本次未合并默认分支。
+
+此前提交 `2e4d65ff38d89190838b2cabaf8c5a5e60f74c16` 的完整独立构建/引擎测试已在 [GitHub Actions run 37129077329](https://github.com/RedisTKey/Godot-Quick-Dev-Kit/actions/runs/37129077329) 通过。随后调整只改变 CI 触发边界，测试和运行时代码保持不变。准确新提交的自动编译结果以 GitHub 页面为准。

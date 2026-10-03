@@ -25,6 +25,7 @@
 - 标准粒子生命周期保守计算，额外延迟交给 TailSeconds/自定义 adapter；超时使用独立结果，不伪报成功
 - 单一暂停时钟，各子节点继承根；动画 outro 直接 Play，不能 Queue 在循环后
 - root project.godot 可直接打开。测试脚本只复制这一个插件到新临时工程，证明无其他 Quick 模块依赖
+- 自动 CI 只做 C# Debug/Release 编译；Godot 编辑器导入/运行时测试需 workflow_dispatch 手动触发，或自行运行独立测试脚本
 - 无现有仓库许可证，未擅自添加许可证
 
 ## 未纳入本版

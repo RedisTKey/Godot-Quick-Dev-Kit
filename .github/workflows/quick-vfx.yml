@@ -1,4 +1,4 @@
-name: Quick VFX standalone
+name: Quick VFX checks
 on:
   push:
     paths:
@@ -14,10 +14,28 @@ on:
       - 'QuickVfxDemo.csproj'
       - 'project.godot'
       - '.github/workflows/quick-vfx.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  standalone:
+  compile:
+    name: C# Debug and Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Compile Debug
+        run: dotnet build QuickVfxDemo.csproj -c Debug
+      - name: Compile Release
+        run: dotnet build QuickVfxDemo.csproj -c Release
+
+  godot-validation:
+    name: Manual Godot standalone validation
+    if: github.event_name == 'workflow_dispatch'
+    needs: compile
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -30,5 +48,5 @@ jobs:
           curl -fL --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip
           unzip -q /tmp/godot.zip -d /tmp/godot
           echo "GODOT=/tmp/godot/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64" >> "$GITHUB_ENV"
-      - name: Build and test isolated plugin
+      - name: Run full isolated Godot checks
         run: tests/quick_vfx_manager/run.sh

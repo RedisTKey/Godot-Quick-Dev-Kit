@@ -99,4 +99,6 @@ GODOT=/path/to/Godot_mono DOTNET=dotnet tests/quick_vfx_manager/run.sh
 
 脚本将**仅本插件**复制到临时独立工程，进行 Debug/Release build、编辑器导入和生命周期测试。无需其他 Quick 插件。实际 GPU 视觉仍需图形渲染器，headless dummy 不能代替粒子视觉验证。
 
+自动 push/PR CI 仅编译 C# Debug/Release，不启动 Godot。完整 Godot 检查保留在同一工作流的 `workflow_dispatch` 手动任务和上面的本地脚本中；默认分支尚未包含工作流时，先使用脚本。
+
 见 [实现计划与决策](docs/PLAN.md) 和 [验证记录](docs/VALIDATION.md)。

@@ -18,11 +18,17 @@ Godot **4.7.2 .NET / C#** 的独立 3D VFX 插件。每个特效是一个场景�
 
 1. 复制完整 `addons/quick_vfx_manager` 到项目相同位置
 2. 使用 Godot .NET 项目并编译 C#；当前验证基线为 Godot 4.7.2 + .NET 9
-3. 可在 Project Settings → Plugins 启用 `Quick VFX Manager (C#)`，它不改 Autoload；运行时本身无需启用插件
+3. 可在 Project Settings → Plugins 启用 `Quick VFX Manager (C#)`。v0.1.1 的 manifest 使用 Godot 4.7.2 支持的空 `script`，不再加载无功能的 C# 编辑器入口；它不改 Autoload，运行时本身无需启用插件
 4. 在发起者下添加 `VfxPlayback` 节点。给 `Definitions` 数组添加 `VfxDefinition` 资源，填写不重复的 ID 和 Scene
 5. 每个效果场景的根节点用 `VfxEffect`，在其后代添加对应参与者，将 Target 拖到同一效果里的实际节点
 
 目录采用 `csharp/`，为将来语言扩展留出位置；本版只提供 C# 实现。
+
+## 首次打开与编译
+
+插件启用不再依赖尚未构建的 C# 编辑器程序集，因此全新拉取、尚无 DLL 时不会因旧入口而自动禁用。**VfxPlayback、VfxDefinition 等 C# 功能仍需要正常 Debug Build**；插件勾选成功不代表 C# 组件已经可用。
+
+在 Godot .NET 编辑器执行 Build，或在含 `.csproj` 的工程目录运行 `dotnet build -c Debug`。若 Build 失败，先处理实际的首条编译错误。旧版本曾自动禁用插件的项目，可在更新后从 Plugins 重新启用；无需删除整个 `.godot` 或重置项目配置。
 
 ## 调用者 API
 
@@ -97,7 +103,9 @@ VfxEffect 等待所有参与者，不依赖单个粒子、任意一个 Animation
 GODOT=/path/to/Godot_mono DOTNET=dotnet tests/quick_vfx_manager/run.sh
 ```
 
-脚本将**仅本插件**复制到临时独立工程，进行 Debug/Release build、编辑器导入和生命周期测试。无需其他 Quick 插件。实际 GPU 视觉仍需图形渲染器，headless dummy 不能代替粒子视觉验证。
+脚本将**仅本插件**复制到临时独立工程，先检查未构建且默认启用的冷启动，再进行 Debug/Release build、编译后编辑器导入和生命周期测试。无需其他 Quick 插件。实际 GPU 视觉仍需图形渲染器，headless dummy 不能代替粒子视觉验证。
+
+也可在任何安装了本插件的工程中，手动运行 `bash addons/quick_vfx_manager/csharp/tests/run_cold_load.sh`；它只建立临时测试工程，不修改当前项目。
 
 自动 push/PR CI 仅编译 C# Debug/Release，不启动 Godot。完整 Godot 检查保留在同一工作流的 `workflow_dispatch` 手动任务和上面的本地脚本中；默认分支尚未包含工作流时，先使用脚本。
 

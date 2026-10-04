@@ -51,3 +51,16 @@ GODOT=/path/to/Godot_v4.7.2-stable_mono_linux.x86_64 tests/quick_vfx_manager/run
 GitHub Actions 工作流 `Quick VFX checks` 在本插件相关文件 push/PR 时只执行 C# Debug/Release 编译，不安装或启动 Godot。完整独立引擎检查只在 `workflow_dispatch` 手动触发时执行，或自行运行上面的脚本。GitHub 网页上的手动运行按钮要求工作流已存在于默认分支；合并前仍可直接运行脚本，本次未合并默认分支。
 
 此前提交 `2e4d65ff38d89190838b2cabaf8c5a5e60f74c16` 的完整独立构建/引擎测试已在 [GitHub Actions run 37129077329](https://github.com/RedisTKey/Godot-Quick-Dev-Kit/actions/runs/37129077329) 通过。随后调整只改变 CI 触发边界，测试和运行时代码保持不变。准确新提交的自动编译结果以 GitHub 页面为准。
+
+
+## v0.1.1 冷启动修正验证（2026-10-04）
+
+- 复现原问题：相同有效 C# 源码，首次打开时没有项目 Debug DLL，旧 QuickVfxPlugin 的基类为空，编辑器将其禁用；先 Debug Build 后则正常识别 EditorPlugin。不是已发现的源码语法错误，也没有据此推断任意用户机器的缓存损坏
+- manifest 改为 `script=""`，删除空 QuickVfxPlugin.cs/.uid。原入口不含初始化或注册行为，C# GlobalClass 不依赖该空入口
+- 全新无 `.godot`、无 DLL 工程：插件真实启用，C# 运行时仍未编译，8 项检查通过
+- Debug Build 后：插件继续启用，6 个 GlobalClass、Node/Resource 实例及 Inspector 定义数组正常，17 项检查通过
+- 原 manifest 的反向对照退出码为 1，明确检测到插件禁用；缺失 PASS、引擎错误、脚本错误和非零退出也均被测试脚本拒绝
+- 修复后的完整独立手动验证通过：Debug/Release 均 0 warning / 0 error，原 20 组 / 174 断言继续通过
+- 新回归包含在手动完整验证脚本中，自动 CI 保持仅 C# Debug/Release 编译
+
+Godot 4.7.2 的 [EditorNode 源码](https://github.com/godotengine/godot/blob/4.7.2-stable/editor/editor_node.cpp#L4153-L4194) 明确区分有初始化脚本和空脚本插件。这里只承诺已验证的 4.7.2 .NET 基线；C# 运行时功能仍须正常 Build。

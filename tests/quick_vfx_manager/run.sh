@@ -6,6 +6,8 @@ DOTNET="${DOTNET:-dotnet}"
 if [[ "$($GODOT --version)" != *mono* ]]; then
   echo 'Use Godot 4.7.2 .NET/Mono: set GODOT to its executable.' >&2; exit 2
 fi
+# Manual suite: first cover enabled-before-build editor startup.
+GODOT="$GODOT" DOTNET="$DOTNET" bash "$ROOT/addons/quick_vfx_manager/csharp/tests/run_cold_load.sh"
 # Recreate a standalone project using ONLY this plugin. No symlinks or other Quick modules.
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/quick-vfx-test.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT

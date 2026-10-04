@@ -52,3 +52,13 @@ completion bookkeeping in headless mode; tests do not synthesize those signals.
 GPU-rendered appearance, visible trails and overall visual quality should
 additionally be checked in the interactive example scene. Godot forbids immediate `Free()` on a node while that
 node is emitting a signal; callbacks should use `QueueFree()` instead.
+
+## 冷启动加载回归（手动）
+
+```sh
+GODOT=/path/to/Godot_mono bash addons/quick_vfx_manager/csharp/tests/run_cold_load.sh
+```
+
+脚本只复制本插件到临时工程，第一次打开编辑器发生在任何编译之前，且没有 `.godot` 或项目 DLL。测试验证插件在真实编辑器中保持启用，同时明确 C# 运行时尚不可用；随后 Debug Build，再验证 6 个 GlobalClass、运行时节点/资源实例化和 Inspector 数组。两阶段分别输出 `VFX_EDITOR_LOAD_PASS phase=cold/built`；插件被禁用、探针缺失或报错都会返回非零。`EditorLoadProbe.gd` 只是临时测试观察器，不是插件的编辑器入口。
+
+工具箱的 `tests/quick_vfx_manager/run.sh` 已包含这项回归。自动 push/PR CI 仍只编译 C#，不会执行此脚本；完整引擎验证仅手动运行。

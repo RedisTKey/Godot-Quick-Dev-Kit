@@ -1,0 +1,74 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/quick_database/csharp/examples/BasicUsage.cs" id="1"]
+
+[node name="QuickDatabaseExample" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 960.0
+offset_bottom = 410.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Heading" type="Label" parent="Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Quick Database · Native C#"
+
+[node name="Help" type="Label" parent="Panel/Margin/Layout"]
+layout_mode = 2
+text = "Increment marks dirty. Flush saves. Commit title is atomic.\nReload discards unsaved changes. Erase resets this example save."
+
+[node name="Summary" type="Label" parent="Panel/Margin/Layout"]
+layout_mode = 2
+text = "Loading..."
+
+[node name="Title" type="LineEdit" parent="Panel/Margin/Layout"]
+layout_mode = 2
+placeholder_text = "Save title"
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Increment" type="Button" parent="Panel/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "+1 (dirty)"
+
+[node name="Commit" type="Button" parent="Panel/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Commit title"
+
+[node name="Flush" type="Button" parent="Panel/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Flush"
+
+[node name="Reload" type="Button" parent="Panel/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Reload"
+
+[node name="Erase" type="Button" parent="Panel/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Erase example"
+
+[node name="Status" type="Label" parent="Panel/Margin/Layout"]
+layout_mode = 2
+text = "Ready"

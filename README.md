@@ -111,6 +111,8 @@ database.commit_slot(&"profile", &"level", func(document: QuickDatabaseDocument)
 
 详细文档：[`addons/quick_database/README.md`](addons/quick_database/README.md)
 
+现在提供独立的 `gds/` 与原生 `csharp/` 两版；旧 GDScript 显式路径需加上 `gds/`。两版共用 `QuickDatabase` Autoload，启用时二选一。C# 版先 Build，再启用插件；交互示例为 `addons/quick_database/csharp/examples/BasicUsage.tscn`（F6）。
+
 ### Quick Level Kit
 
 用于快速搭建“关卡目录 → 进入关卡 → 准备 → 运行 → 通关/失败 → 下一关或重试”的基础流程。

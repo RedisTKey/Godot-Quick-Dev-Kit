@@ -5,5 +5,5 @@
     <Nullable>enable</Nullable>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
-  <ItemGroup><Compile Include="addons/quick_vfx_manager/csharp/**/*.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="addons/quick_vfx_manager/csharp/**/*.cs" /><Compile Include="addons/quick_database/csharp/**/*.cs" /></ItemGroup>
 </Project>

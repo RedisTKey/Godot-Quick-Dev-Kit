@@ -1,6 +1,6 @@
 extends SceneTree
 
-const ADDON_ROOT := "res://addons/quick_database"
+const ADDON_ROOT := "res://addons/quick_database/gds"
 const REQUIRED_FILES := [
 	"plugin.cfg",
 	"quick_database_plugin.gd",

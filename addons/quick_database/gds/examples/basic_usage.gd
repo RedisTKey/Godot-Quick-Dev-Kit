@@ -1,7 +1,7 @@
 extends Node
 
 const ExampleDocument := preload(
-	"res://addons/quick_database/examples/example_document.gd"
+	"res://addons/quick_database/gds/examples/example_document.gd"
 )
 const SLOT := &"example"
 const SAVE_PATH := "user://quick_database_example.cfg"
